@@ -1,0 +1,25 @@
+Code Order:
+
+1) Primary Analysis File Creation - Data used:
+	Using NES (1997 - 2018), 
+	Medicaid deployment at the state level,
+	State health insurance market,
+	County population,
+	Uber deployment data,
+	County Business Patterns,
+	Local Area Unemployment Rate
+ 
+2) State Analysis File Creation - Data used:
+	CPS data,
+	ACS data,
+	ACS_desc data,
+	Nonemployer stats at the state level,
+	Medicaid deployment at the state level,
+	State population
+	
+3) Mapping Data Availability 
+4) Mapping Medicaid and Uber
+5) Descriptive Plots
+6) Medicaid Analysis state
+7) Medicaid Analysis county
+8) Callaway did

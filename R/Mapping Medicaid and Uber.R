@@ -143,48 +143,144 @@ colnames(using_plot)[1] <- "fips"
 
 year_list <- c(2012,2013,2014,2015,2016,2017)
 
-for (i in seq_along(year_list)) {
+using_plot <- subset(using_plot, as.numeric(YEAR.id) == 2012 |as.numeric(YEAR.id) == 2013 |as.numeric(YEAR.id) == 2014 |as.numeric(YEAR.id) == 2015 |as.numeric(YEAR.id) == 2016 |as.numeric(YEAR.id) == 2017)
 
-  plot_data <- subset(using_plot, YEAR.id==year_list[i])
-  
-  p <- plot_usmap(regions = c("states"), data = plot_data, 
-             values = "Medicad_uber", lines = rgb(0, 0, 0, 0.05)) +
-    labs(title = paste0(year_list[i])) +
-    scale_fill_manual(name = "Medicaid and Uber",
-                      labels = c("Neither", "Medicaid", "Uber", "Both", "Missing"),
-                      values = c("Neither"="grey", "Medicaid"="green3", "Uber" = "red3", "Both" = "purple3"),
-                      na.value = "white") +
-    theme(legend.position = "top",
-          legend.background = element_rect(fill=alpha("white", 0.4)),
-          legend.text = element_blank(),
-          legend.title = element_blank(),
-          title = element_text(size = 20))
-  
-  png(paste0("Map_Medicaid_uber_",year_list[i],".png"), width = 640, height = 420)
+
+
+p <- plot_usmap(regions = c("counties"), 
+                data = na.omit(using_plot),
+                values = "Medicad_uber",
+                color = rgb(0, 0, 0, 0.05),
+                size = .02) +
+  # labs(title = paste0(year_list[i])) +
+  scale_fill_manual(name = "Medicaid and Uber",
+                    labels = c("Both", "Medicaid", "Neither", "Uber", "Missing"),
+                    values = c("Neither"="grey", "Medicaid"="green3", "Uber" = "red3", "Both" = "purple3"),
+                    na.value = "black") +
+  theme(legend.position = "bottom",
+        legend.background = element_rect(fill=alpha("white", 0.4)),
+        # legend.text = element_blank(),
+        # legend.title = element_blank(),
+        strip.background = element_rect(colour=NA, fill=NA),
+        panel.background = element_rect(fill = "white", color = "white"),
+        panel.border = element_rect(fill = NA, color = NA),
+        panel.spacing = unit(2,"lines"),
+        strip.text.x = element_text(size = 10),
+        strip.text.y = element_text(size = 10),
+        title = element_blank())+ 
+  # guides(fill = FALSE)  + 
+  facet_wrap( ~ YEAR.id, drop = TRUE, ncol= 3)
+
+p
+
+county_list <- as.data.frame(unique(p[["data"]][["fips"]]))
+names(county_list) <- "fips"
+county_list$fips <- as.numeric(county_list$fips)
+county_merge <- county_list
+county_merge$YEAR.id <- 2012
+test <- county_list
+test$YEAR.id <- 2013
+county_merge <- rbind(county_merge,test)
+
+test <- county_list
+test$YEAR.id <- 2014
+county_merge <- rbind(county_merge,test)
+
+test <- county_list
+test$YEAR.id <- 2015
+county_merge <- rbind(county_merge,test)
+
+test <- county_list
+test$YEAR.id <- 2016
+county_merge <- rbind(county_merge,test)
+
+test <- county_list
+test$YEAR.id <- 2017
+county_merge <- rbind(county_merge,test)
+
+test <- merge(using_plot, county_merge, all = TRUE)
+test$Medicad_uber[is.na(test$Medicad_uber)] <- "Neither"
+
+
+p <- plot_usmap(regions = c("counties"), 
+                data = test,
+                values = "Medicad_uber",
+                color = rgb(0, 0, 0, 0.05),
+                size = .0002) +
+  # labs(title = paste0(year_list[i])) +
+  scale_fill_manual(name = "Medicaid and Uber",
+                    labels = c("Both", "Medicaid", "Neither", "Uber", "Missing"),
+                    values = c("Neither"="grey", "Medicaid"="green3", "Uber" = "red3", "Both" = "purple3"),
+                    na.value = "black") +
+  theme(legend.position = "bottom",
+        legend.background = element_rect(fill=alpha("white", 0.4)),
+        legend.text = element_text(20),
+        # legend.title = element_blank(),
+        strip.background = element_rect(colour=NA, fill=NA),
+        panel.background = element_rect(fill = "white", color = "white"),
+        panel.border = element_rect(fill = NA, color = NA),
+        panel.spacing = unit(2,"lines"),
+        strip.text.x = element_text(size = 15),
+        strip.text.y = element_text(size = 15),
+        title = element_blank())+ 
+  # guides(fill = FALSE)  + 
+  facet_wrap( ~ YEAR.id, drop = TRUE, ncol= 2)
+
+p
+
+  png(paste0("Map_Medicaid_uber.png"), width = 500, height = 750)
   plot(p)
   dev.off()
-    
-}
 
-for (i in seq_along(year_list)) {
-  
-  plot_data <- subset(using_plot, YEAR.id==year_list[i])
-  
-  p <- plot_usmap(regions = c("states"), data = plot_data, 
-                  values = "Medicaid", lines = rgb(0, 0, 0, 0.05)) +
-    labs(title = paste0(year_list[i])) +
-    scale_fill_manual(name = "Medicaid",
-                      labels = c("No Expansion", "Medicaid Expansion", "Missing"),
-                      values = c("No Expansion"="grey", "Medicaid Expansion"="green3"),
-                      na.value = "white") +
-    theme(legend.position = "top",
-          legend.background = element_rect(fill=alpha("white", 0.4)),
-          legend.text = element_blank(),
-          legend.title = element_blank(),
-          title = element_text(size = 20))
-  
-  png(paste0("Map_Medicaid_",year_list[i],".png"), width = 640, height = 420)
-  plot(p)
-  dev.off()
-  
-}
+
+# for (i in seq_along(year_list)) {
+# 
+#   plot_data <- subset(using_plot, YEAR.id==year_list[i])
+#   
+#   p <- plot_usmap(regions = c("states"), data = plot_data, 
+#              values = "Medicad_uber",
+#              color = rgb(0, 0, 0, 0.05),
+#              size = .02) +
+#     labs(title = paste0(year_list[i])) +
+#     scale_fill_manual(name = "Medicaid and Uber",
+#                       labels = c("Neither", "Medicaid", "Uber", "Both", "Missing"),
+#                       values = c("Neither"="grey", "Medicaid"="green3", "Uber" = "red3", "Both" = "purple3"),
+#                       na.value = "white") +
+#     theme(legend.position = "top",
+#           legend.background = element_rect(fill=alpha("white", 0.4)),
+#           legend.text = element_blank(),
+#           legend.title = element_blank(),
+#           title = element_text(size = 20)) + 
+#     guides(shape = FALSE,
+#            color = FALSE,
+#            size = FALSE,
+#            fill = FALSE) 
+#   
+#   png(paste0("Map_Medicaid_uber_",year_list[i],".png"), width = 640, height = 420)
+#   plot(p)
+#   dev.off()
+#     
+# }
+# 
+# for (i in seq_along(year_list)) {
+#   
+#   plot_data <- subset(using_plot, YEAR.id==year_list[i])
+#   
+#   p <- plot_usmap(regions = c("states"), data = plot_data, 
+#                   values = "Medicaid", lines = rgb(0, 0, 0, 0.05)) +
+#     labs(title = paste0(year_list[i])) +
+#     scale_fill_manual(name = "Medicaid",
+#                       labels = c("No Expansion", "Medicaid Expansion", "Missing"),
+#                       values = c("No Expansion"="grey", "Medicaid Expansion"="green3"),
+#                       na.value = "white") +
+#     theme(legend.position = "top",
+#           legend.background = element_rect(fill=alpha("white", 0.4)),
+#           legend.text = element_blank(),
+#           legend.title = element_blank(),
+#           title = element_text(size = 20))
+#   
+#   png(paste0("Map_Medicaid_",year_list[i],".png"), width = 640, height = 420)
+#   plot(p)
+#   dev.off()
+#   
+# }

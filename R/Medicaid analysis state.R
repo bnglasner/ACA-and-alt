@@ -25,30 +25,30 @@ library(did)
 #################
 if(Sys.info()[["user"]]=="bglasner"){
   # Root folder
-  path_project <- "C:/Users/bglasner/Dropbox/PhD Requirements"
+  path_project <- "C:/Users/bglasner/Dropbox/GitHub"
 }
 if(Sys.info()[["user"]]=="bngla"){
   # Root folder
-  path_project <- "C:/Users/bngla/Dropbox/PhD Requirements"
+  path_project <- "C:/Users/bngla/Dropbox/GitHub"
 }
 # Path to saved cohort data 
-path_data <- paste0(path_project,"\\Nonemployer data\\Data\\")
-# Path where matched samples should be saved 
-path_output <- paste0(path_project,"\\ACA and alt\\output")
-
-setwd(paste0(path_data))
-
+path_data <- paste0(path_project,"/ACA and alt/Data")
+path_output <- paste0(path_project,"/ACA and alt/Output")
+path_LAU <- paste0(path_project,"/Data sources/LAU/Data")
 options(scipen=10000)
 set.seed(42)
-
 industry_analysis <- 1
-load("state_NES_ACS_CPS.RData")
 
+########################
+setwd(paste0(path_LAU))
 load("LAU.RData")
 LAU_st <- aggregate(x = LAU$`Labor Force`, by = list(LAU$st, LAU$YEAR.id), FUN = sum, na.rm = TRUE)
 colnames(LAU_st)[1] <- "st"
 colnames(LAU_st)[2] <- "YEAR.id"
 colnames(LAU_st)[3] <- "Labor.Force"
+
+setwd(paste0(path_data))
+load("state_NES_ACS_CPS.RData")
 
 state_aggs <- merge(state_aggs, LAU_st)
 state_aggs$estab_pop <- state_aggs$estab/state_aggs$Labor.Force
